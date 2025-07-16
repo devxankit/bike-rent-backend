@@ -59,9 +59,10 @@ exports.addBike = async (req, res) => {
   log('BikeController', 'addBike', 'info', 'Entry');
   try {
     if (req.file) req.body.image = req.file.path;
-    const { name, price, image } = req.body;
-    if (!name || !price || !image) {
-      return res.status(400).json({ error: 'Name, price, and image are required.' });
+    const { name, price, image, location } = req.body;
+    if (!name || !price || !image || !location) {
+      log('BikeController', 'addBike', 'warn', 'Missing required fields');
+      return res.status(400).json({ error: 'Name, price, image, and location are required.' });
     }
     const bike = new Bike(req.body);
     await bike.save();
