@@ -28,10 +28,10 @@ router.get('/users', auth, admin, async (req, res) => {
 
 // City Pages CRUD Operations
 
-// Helper function to generate slug from city name (like existing pages)
+// Helper function to generate slug from city name (new format)
 function generateSlug(name) {
   const cleanName = name.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
-  return `${cleanName}-rent-bike-in-${cleanName}`;
+  return `bike-rent-in-${cleanName}`;
 }
 
 // Helper function to generate short slug for component name
