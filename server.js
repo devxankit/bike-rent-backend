@@ -30,6 +30,7 @@ const bikeRoutes = require('./routes/bikeRoutes');
 const authRoutes = require('./routes/authRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const cityRoutes = require('./routes/cityRoutes');
+const blogRoutes = require('./routes/blogRoutes');
 const connectDB = require('./db');
 
 // Use routes
@@ -37,6 +38,7 @@ app.use('/api/bikes', bikeRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/cities', cityRoutes);
+app.use('/api/blogs', blogRoutes);
 
 // Health check route
 app.get('/api/health', (req, res) => {
