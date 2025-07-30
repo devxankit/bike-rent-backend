@@ -27,6 +27,12 @@ const blogSchema = new mongoose.Schema({
     type: String, // Cloudinary URL
     default: ''
   },
+  imageAlt: {
+    type: String,
+    trim: true,
+    maxlength: 200,
+    default: ''
+  },
   author: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',

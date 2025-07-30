@@ -156,7 +156,8 @@ router.post('/admin', auth, admin, upload.single('thumbnail'), async (req, res) 
       tags,
       seoTitle,
       seoDescription,
-      metaKeywords
+      metaKeywords,
+      imageAlt // <-- NEW FIELD
     } = req.body;
 
     const blogData = {
@@ -168,7 +169,8 @@ router.post('/admin', auth, admin, upload.single('thumbnail'), async (req, res) 
       author: req.user._id,
       seoTitle,
       seoDescription,
-      metaKeywords
+      metaKeywords,
+      imageAlt // <-- NEW FIELD
     };
 
     // Handle tags (convert string to array if needed)
@@ -204,7 +206,8 @@ router.put('/admin/:id', auth, admin, upload.single('thumbnail'), async (req, re
       tags,
       seoTitle,
       seoDescription,
-      metaKeywords
+      metaKeywords,
+      imageAlt // <-- NEW FIELD
     } = req.body;
 
     const blog = await Blog.findById(req.params.id);
@@ -220,6 +223,7 @@ router.put('/admin/:id', auth, admin, upload.single('thumbnail'), async (req, re
     blog.seoTitle = seoTitle || blog.seoTitle;
     blog.seoDescription = seoDescription || blog.seoDescription;
     blog.metaKeywords = metaKeywords || blog.metaKeywords;
+    blog.imageAlt = imageAlt !== undefined ? imageAlt : blog.imageAlt; // <-- NEW FIELD
 
     // Handle tags
     if (tags) {
