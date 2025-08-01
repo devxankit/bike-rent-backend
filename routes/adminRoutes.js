@@ -112,8 +112,10 @@ import { useNavigate } from 'react-router-dom';
 import FilterSidebar from '../../components/FilterSidebar';
 import { FiX } from 'react-icons/fi';
 import { generateCitySlug, generateBikesSlug } from '../../utils/slugUtils';
+import { Box, Typography } from '@mui/material';
+import { useScrollAnimation } from '../../hooks/useScrollAnimation';
 
-const ${cityName}BikesPage = () => {
+const ${cityName}BikesPage = ({ cityData }) => {
   const [bikes, setBikes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -124,6 +126,7 @@ const ${cityName}BikesPage = () => {
   const [maxPrice] = useState(10000);
   const navigate = useNavigate();
   const [filterOpen, setFilterOpen] = useState(false);
+  const scrollRef = useScrollAnimation();
 
   useEffect(() => {
     // Fetch all cities for the filter dropdown
@@ -199,8 +202,8 @@ const ${cityName}BikesPage = () => {
   return (
     <>
       <Navbar onFilterToggle={() => setFilterOpen(true)} />
-      <div className="flex min-h-screen h-screen bg-gray-50">
-        {/* Filters */}
+      <div className="flex min-h-screen bg-gray-50">
+        {/* Filters - Left Sidebar */}
         <aside className="w-80 p-4 bg-white border-r hidden md:block sticky top-0 h-screen shadow-lg rounded-r-3xl" style={{ alignSelf: 'flex-start' }}>
           <FilterSidebar
             location={location}
@@ -214,6 +217,7 @@ const ${cityName}BikesPage = () => {
             navigate={navigate}
           />
         </aside>
+        
         {/* Mobile Filter Popup */}
         {filterOpen && (
          <div className="fixed inset-0 z-[100010] flex md:hidden">
@@ -243,13 +247,16 @@ const ${cityName}BikesPage = () => {
             </div>
           </div>
         )}
-        {/* Main Content */}
+        
+        {/* Main Content - Right Side */}
         <main className="flex-1 overflow-y-auto">
           <div className="p-6">
             <div className="mb-6">
               <h1 className="text-3xl font-bold text-gray-900 mb-2">Bikes in ${cityName}</h1>
               <p className="text-gray-600">Find the perfect bike for your journey in ${cityName}</p>
             </div>
+            
+            {/* Bike Listings */}
             {loading ? (
               <div className="flex justify-center items-center h-64">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-yellow-500"></div>
@@ -265,6 +272,151 @@ const ${cityName}BikesPage = () => {
                 {sortedBikes.map((bike) => (
                   <BikeCard key={bike._id} bike={bike} />
                 ))}
+              </div>
+            )}
+            
+            {/* City Page Content - Displayed below bike listings in main content area */}
+            {cityData && cityData.content && (
+              <div ref={scrollRef} className="animate-fade-in-up mt-8">
+                <Box 
+                  sx={{ 
+                    p: 4,
+                    bgcolor: 'white',
+                    borderRadius: 3,
+                    boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
+                    border: '1px solid #e5e7eb',
+                    position: 'relative',
+                    overflow: 'hidden',
+                    '&::before': {
+                      content: '""',
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      height: '4px',
+                      background: 'linear-gradient(90deg, #facc15 0%, #f59e0b 100%)',
+                      borderRadius: '12px 12px 0 0'
+                    }
+                  }}
+                > 
+                  
+                  <Box 
+                    dangerouslySetInnerHTML={{ __html: cityData.content }}
+                    sx={{
+                      '& h1, & h2, & h3, & h4, & h5, & h6': {
+                        color: '#1f2937',
+                        fontWeight: 600,
+                        mb: 2,
+                        mt: 3,
+                        lineHeight: 1.3
+                      },
+                      '& h1': { fontSize: { xs: '1.75rem', md: '2rem' } },
+                      '& h2': { fontSize: { xs: '1.5rem', md: '1.75rem' } },
+                      '& h3': { fontSize: { xs: '1.25rem', md: '1.5rem' } },
+                      '& h4': { fontSize: { xs: '1.125rem', md: '1.25rem' } },
+                      '& h5': { fontSize: { xs: '1rem', md: '1.125rem' } },
+                      '& h6': { fontSize: '1rem' },
+                      '& p': {
+                        color: '#4b5563',
+                        lineHeight: 1.8,
+                        mb: 3,
+                        fontSize: '1rem',
+                        textAlign: 'justify'
+                      },
+                      '& ul, & ol': {
+                        color: '#4b5563',
+                        lineHeight: 1.8,
+                        mb: 3,
+                        pl: 4
+                      },
+                      '& li': {
+                        mb: 1.5,
+                        position: 'relative'
+                      },
+                      '& ul li::before': {
+                        content: '"•"',
+                        color: '#facc15',
+                        fontWeight: 'bold',
+                        position: 'absolute',
+                        left: '-1.5rem'
+                      },
+                      '& a': {
+                        color: '#facc15',
+                        textDecoration: 'none',
+                        fontWeight: 500,
+                        borderBottom: '1px solid transparent',
+                        transition: 'all 0.3s ease',
+                        '&:hover': {
+                          borderBottomColor: '#facc15',
+                          color: '#f59e0b'
+                        }
+                      },
+                      '& img': {
+                        maxWidth: '100%',
+                        height: 'auto',
+                        borderRadius: 2,
+                        my: 3,
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                        transition: 'transform 0.3s ease',
+                        '&:hover': {
+                          transform: 'scale(1.02)'
+                        }
+                      },
+                      '& blockquote': {
+                        borderLeft: '4px solid #facc15',
+                        pl: 3,
+                        ml: 0,
+                        fontStyle: 'italic',
+                        color: '#6b7280',
+                        bgcolor: '#f9fafb',
+                        p: 3,
+                        borderRadius: 2,
+                        my: 3,
+                        position: 'relative',
+                        '&::before': {
+                          content: '""',
+                          position: 'absolute',
+                          top: 0,
+                          left: 0,
+                          right: 0,
+                          bottom: 0,
+                          background: 'linear-gradient(135deg, rgba(250, 204, 21, 0.05) 0%, rgba(245, 158, 11, 0.05) 100%)',
+                          borderRadius: 2,
+                          zIndex: -1
+                        }
+                      },
+                      '& strong, & b': {
+                        fontWeight: 700,
+                        color: '#1f2937'
+                      },
+                      '& em, & i': {
+                        fontStyle: 'italic',
+                        color: '#6b7280'
+                      },
+                      '& table': {
+                        width: '100%',
+                        borderCollapse: 'collapse',
+                        my: 3,
+                        borderRadius: 2,
+                        overflow: 'hidden',
+                        boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+                      },
+                      '& th, & td': {
+                        border: '1px solid #e5e7eb',
+                        padding: '12px',
+                        textAlign: 'left'
+                      },
+                      '& th': {
+                        bgcolor: '#facc15',
+                        color: '#1f2937',
+                        fontWeight: 600
+                      },
+                      '& tr:nth-of-type(even)': {
+                        bgcolor: '#f9fafb'
+                      }
+                    }}
+                  />
+                </Box>
               </div>
             )}
           </div>
@@ -308,7 +460,7 @@ router.get('/city-routes', async (req, res) => {
 // Create new city page
 router.post('/city-pages', auth, admin, upload.single('image'), async (req, res) => {
   try {
-    const { name, description, seoTitle, seoDescription, metaKeywords } = req.body;
+    const { name, description, content, seoTitle, seoDescription, metaKeywords } = req.body;
     
     if (!name) {
       return res.status(400).json({ message: 'City name is required' });
@@ -335,6 +487,7 @@ router.post('/city-pages', auth, admin, upload.single('image'), async (req, res)
       name: capitalizedName,
       slug,
       description: description || '',
+      content: content || '',
       image: imageUrl,
       seoTitle: seoTitle || `Bike Rental in ${capitalizedName}`,
       seoDescription: seoDescription || `Find and rent bikes in ${capitalizedName}. Best bike rental service with affordable prices.`,
@@ -376,7 +529,7 @@ router.post('/city-pages', auth, admin, upload.single('image'), async (req, res)
 router.put('/city-pages/:id', auth, admin, upload.single('image'), async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, description, isActive, seoTitle, seoDescription, metaKeywords } = req.body;
+    const { name, description, content, isActive, seoTitle, seoDescription, metaKeywords } = req.body;
     
     const cityPage = await CityPage.findById(id);
     if (!cityPage) {
@@ -397,6 +550,7 @@ router.put('/city-pages/:id', auth, admin, upload.single('image'), async (req, r
       {
         ...(capitalizedName && { name: capitalizedName, slug: newSlug }),
         ...(description !== undefined && { description }),
+        ...(content !== undefined && { content }),
         image: imageUrl,
         ...(isActive !== undefined && { isActive }),
         ...(seoTitle !== undefined && { seoTitle }),
@@ -457,6 +611,24 @@ router.delete('/city-pages/:id', auth, admin, async (req, res) => {
   } catch (err) {
     console.error('Error deleting city page:', err);
     res.status(500).json({ message: 'Failed to delete city page', error: err.message });
+  }
+});
+
+// Image upload endpoint for rich text editor
+router.post('/upload/image', auth, admin, upload.single('image'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: 'No image file provided' });
+    }
+
+    // Return the uploaded image URL
+    res.json({ 
+      url: req.file.path,
+      message: 'Image uploaded successfully' 
+    });
+  } catch (err) {
+    console.error('Error uploading image:', err);
+    res.status(500).json({ message: 'Failed to upload image', error: err.message });
   }
 });
 

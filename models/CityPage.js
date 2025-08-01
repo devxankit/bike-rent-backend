@@ -17,6 +17,10 @@ const cityPageSchema = new mongoose.Schema({
     type: String,
     default: ''
   },
+  content: {
+    type: String,
+    default: ''
+  },
   image: {
     type: String,
     default: ''
