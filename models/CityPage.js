@@ -23,7 +23,7 @@ const cityPageSchema = new mongoose.Schema({
   },
   image: {
     type: String,
-    default: ''
+    default: null
   },
   isActive: {
     type: Boolean,

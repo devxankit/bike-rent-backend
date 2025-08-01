@@ -479,8 +479,8 @@ router.post('/city-pages', auth, admin, upload.single('image'), async (req, res)
       return res.status(400).json({ message: 'City page already exists' });
     }
 
-    // Get image URL from uploaded file or use default
-    const imageUrl = req.file ? req.file.path : '';
+    // Get image URL from uploaded file or use null if no image
+    const imageUrl = req.file ? req.file.path : null;
 
     // Create new city page
     const cityPage = new CityPage({
@@ -541,7 +541,7 @@ router.put('/city-pages/:id', auth, admin, upload.single('image'), async (req, r
     const capitalizedName = name ? capitalizeCityName(name.trim()) : null;
     const newSlug = capitalizedName ? generateSlug(capitalizedName) : cityPage.slug;
     
-    // Get image URL from uploaded file or keep existing
+    // Get image URL from uploaded file or keep existing (only update if new file is uploaded)
     const imageUrl = req.file ? req.file.path : cityPage.image;
     
     // Update city page
