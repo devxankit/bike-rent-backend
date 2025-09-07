@@ -32,135 +32,276 @@ function generateTaxiFullSlug(name) {
 // Helper function to create taxi city page component
 function createTaxiCityPageComponent(cityName, slug) {
   const componentTemplate = `import React, { useEffect, useState } from 'react';
-import { Helmet } from 'react-helmet-async';
-import { Box, Typography, Container, Grid, Card, CardContent, Button, Chip, Alert } from '@mui/material';
-import { FaTaxi, FaMapMarkerAlt, FaClock, FaMoneyBillWave, FaStar } from 'react-icons/fa';
-import TaxiNavBar from '../../components/taxi-components/TaxiNavBar';
 import api from '../../utils/api';
+import Navbar from '../../components/Navbar';
+import { useNavigate } from 'react-router-dom';
+import TaxiFilterSidebar from '../../components/TaxiFilterSidebar';
+import { FiX } from 'react-icons/fi';
+import { generateTaxiCitySlug } from '../../utils/slugUtils';
+import { Box, Typography } from '@mui/material';
+import { useScrollAnimation } from '../../hooks/useScrollAnimation';
 
-const ${cityName}TaxiPage = () => {
-  const [taxiServices, setTaxiServices] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+const ${cityName}TaxiPage = ({ cityData }) => {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [location, setLocation] = useState('${cityName}');
+  const [allLocations, setAllLocations] = useState([]);
+  const [taxiName, setTaxiName] = useState("");
+  const [price, setPrice] = useState(0);
+  const [maxPrice] = useState(10000);
+  const navigate = useNavigate();
+  const [filterOpen, setFilterOpen] = useState(false);
+  const scrollRef = useScrollAnimation();
 
   useEffect(() => {
-    fetchTaxiServices();
+    // Fetch all cities for the filter dropdown
+    const fetchCities = async () => {
+      try {
+        const citiesRes = await api.get('/api/taxi-cities');
+        const cityNames = citiesRes.data.map(city => city.name);
+        setAllLocations(cityNames);
+      } catch (err) {
+        console.error('Failed to fetch cities:', err);
+        setAllLocations(['${cityName}']); // Fallback
+      }
+    };
+    fetchCities();
   }, []);
 
-  const fetchTaxiServices = async () => {
-    try {
-      setLoading(true);
-      // This would fetch actual taxi services for the city
-      // For now, we'll use mock data
-      const mockServices = [
-        {
-          id: 1,
-          type: 'Economy',
-          description: 'Affordable taxi service for everyday travel',
-          basePrice: 50,
-          pricePerKm: 12,
-          features: ['AC', 'GPS', 'Professional Driver'],
-          rating: 4.5
-        },
-        {
-          id: 2,
-          type: 'Premium',
-          description: 'Luxury taxi service with premium vehicles',
-          basePrice: 100,
-          pricePerKm: 20,
-          features: ['AC', 'GPS', 'Professional Driver', 'WiFi', 'Water Bottle'],
-          rating: 4.8
-        }
-      ];
-      setTaxiServices(mockServices);
-    } catch (err) {
-      setError('Failed to fetch taxi services');
-    } finally {
-      setLoading(false);
+  // Redirect to city route on city change
+  useEffect(() => {
+    if (location && location.toLowerCase() !== '${cityName.toLowerCase()}') {
+      const city = location.trim().toLowerCase();
+      if (city) {
+        const slug = generateTaxiCitySlug(city);
+        navigate(\`/taxi/\${slug}\`);
+      } else {
+        navigate(\`/taxi\`);
+      }
     }
-  };
+  }, [location, navigate]);
 
   return (
     <>
-      <Helmet>
-        <title>Taxi Service in ${cityName} | BookYourRide - Best Taxi Service</title>
-        <meta name="description" content="Book reliable taxi services in ${cityName}. Professional drivers, comfortable vehicles, and transparent pricing. Book your ride now!" />
-        <meta name="keywords" content="taxi service ${cityName}, cab booking ${cityName}, taxi rental ${cityName}, ${cityName} taxi service" />
-      </Helmet>
-      
-      <TaxiNavBar />
-      
-      <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-        <Box sx={{ mb: 4 }}>
-        <Typography variant="h3" component="h1" gutterBottom sx={{ color: '#FDB813', fontWeight: 'bold' }}>
-          Taxi Service in ${cityName}
-        </Typography>
-          <Typography variant="h6" color="text.secondary" paragraph>
-            Professional taxi services with comfortable vehicles and experienced drivers
-          </Typography>
-        </Box>
-
-        {loading ? (
-          <Box display="flex" justifyContent="center" p={4}>
-            <Typography>Loading taxi services...</Typography>
-          </Box>
-        ) : error ? (
-          <Alert severity="error" sx={{ mb: 2 }}>
-            {error}
-          </Alert>
-        ) : (
-          <Grid container spacing={3}>
-            {taxiServices.map((service) => (
-              <Grid item xs={12} md={6} key={service.id}>
-                <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-                  <CardContent sx={{ flexGrow: 1 }}>
-                    <Box display="flex" alignItems="center" mb={2}>
-                      <FaTaxi style={{ marginRight: 8, color: '#FDB813' }} />
-                      <Typography variant="h6" component="h2">
-                        {service.type} Taxi
-                      </Typography>
-                      <Box display="flex" alignItems="center" ml="auto">
-                        <FaStar style={{ color: '#ffc107', marginRight: 4 }} />
-                        <Typography variant="body2">{service.rating}</Typography>
-                      </Box>
-                    </Box>
-                    
-                    <Typography variant="body2" color="text.secondary" paragraph>
-                      {service.description}
-                    </Typography>
-                    
-                    <Box mb={2}>
-                      <Typography variant="h6" color="primary">
-                        ₹{service.basePrice} + ₹{service.pricePerKm}/km
-                      </Typography>
-                    </Box>
-                    
-                    <Box mb={2}>
-                      {service.features.map((feature, index) => (
-                        <Chip
-                          key={index}
-                          label={feature}
-                          size="small"
-                          sx={{ mr: 1, mb: 1 }}
-                        />
-                      ))}
-                    </Box>
-                    
-                    <Button
-                      variant="contained"
-                      fullWidth
-                      startIcon={<FaTaxi />}
-                      sx={{ mt: 'auto' }}
-                    >
-                      Book Now
-                    </Button>
-                  </CardContent>
-                </Card>
-              </Grid>
-            ))}
-          </Grid>
+      <Navbar onFilterToggle={() => setFilterOpen(true)} />
+      <div className="flex min-h-screen bg-gray-50">
+        {/* Filters - Left Sidebar */}
+        <aside className="w-80 p-4 bg-white border-r hidden md:block sticky top-0 h-screen shadow-lg rounded-r-3xl" style={{ alignSelf: 'flex-start' }}>
+          <TaxiFilterSidebar
+            location={location}
+            setLocation={setLocation}
+            allLocations={allLocations}
+            taxiName={taxiName}
+            setTaxiName={setTaxiName}
+            price={price}
+            setPrice={setPrice}
+            maxPrice={maxPrice}
+            navigate={navigate}
+          />
+        </aside>
+        
+        {/* Mobile Filter Popup */}
+        {filterOpen && (
+         <div className="fixed inset-0 z-[100010] flex md:hidden">
+         {/* Overlay */}
+         <div className="absolute inset-0 bg-black bg-opacity-30" onClick={() => setFilterOpen(false)} />
+         {/* Popup - always slide in from left */}
+           <div className="absolute left-0 top-0 bg-white w-10/12 max-w-xs h-full shadow-xl p-2 animate-slide-in-left flex flex-col">
+              <div className="flex items-center justify-between mb-2">
+                <h2 className="text-base font-bold text-yellow-500">Taxi Filters</h2>
+                 <button onClick={() => setFilterOpen(false)} aria-label="Close filter" className="p-1 rounded focus:outline-none focus:ring-2 focus:ring-red-400">
+                   <FiX className="w-5 h-5 text-yellow-500" />
+                  </button>
+              </div>
+              <TaxiFilterSidebar
+                location={location}
+                setLocation={setLocation}
+                allLocations={allLocations}
+                taxiName={taxiName}
+                setTaxiName={setTaxiName}
+                price={price}
+                setPrice={setPrice}
+                maxPrice={maxPrice}
+                navigate={navigate}
+                compact
+              />
+            </div>
+          </div>
         )}
-      </Container>
+        
+        {/* Main Content - Right Side */}
+        <main className="flex-1 overflow-y-auto">
+          <div className="p-6">
+            <div className="mb-6">
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">Taxis in ${cityName}</h1>
+              <p className="text-gray-600">Find the perfect taxi for your journey in ${cityName}</p>
+            </div>
+            
+            {/* No Taxis Message */}
+            <div className="text-center py-12">
+              <div className="bg-white rounded-lg shadow-lg p-8 max-w-md mx-auto">
+                <div className="text-6xl mb-4">🚕</div>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                  No Taxis Available Yet
+                </h3>
+                <p className="text-gray-600 mb-4">
+                  We're working on adding taxi services to ${cityName}. 
+                  Check back soon for available taxis!
+                </p>
+                <div className="text-sm text-gray-500">
+                  <p>• Economy Taxis</p>
+                  <p>• Premium Taxis</p>
+                  <p>• Luxury Vehicles</p>
+                </div>
+              </div>
+            </div>
+            
+            {/* City Page Content - Displayed below taxi listings in main content area */}
+            {cityData && cityData.content && (
+              <div ref={scrollRef} className="animate-fade-in-up mt-8">
+                <Box 
+                  sx={{ 
+                    p: 4,
+                    bgcolor: 'white',
+                    borderRadius: 3,
+                    boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
+                    border: '1px solid #e5e7eb',
+                    position: 'relative',
+                    overflow: 'hidden',
+                    '&::before': {
+                      content: '""',
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      height: '4px',
+                      background: 'linear-gradient(90deg, #FDB813 0%, #E6A612 100%)',
+                      borderRadius: '12px 12px 0 0'
+                    }
+                  }}
+                >
+                  <Box 
+                    dangerouslySetInnerHTML={{ __html: cityData.content }}
+                    sx={{
+                      '& h1, & h2, & h3, & h4, & h5, & h6': {
+                        color: '#1f2937',
+                        fontWeight: 600,
+                        mb: 2,
+                        mt: 3,
+                        lineHeight: 1.3
+                      },
+                      '& h1': { fontSize: { xs: '1.75rem', md: '2rem' } },
+                      '& h2': { fontSize: { xs: '1.5rem', md: '1.75rem' } },
+                      '& h3': { fontSize: { xs: '1.25rem', md: '1.5rem' } },
+                      '& h4': { fontSize: { xs: '1.125rem', md: '1.25rem' } },
+                      '& h5': { fontSize: { xs: '1rem', md: '1.125rem' } },
+                      '& h6': { fontSize: '1rem' },
+                      '& p': {
+                        color: '#4b5563',
+                        lineHeight: 1.8,
+                        mb: 3,
+                        fontSize: '1rem',
+                        textAlign: 'justify'
+                      },
+                      '& ul, & ol': {
+                        color: '#4b5563',
+                        lineHeight: 1.8,
+                        mb: 3,
+                        pl: 4
+                      },
+                      '& li': {
+                        mb: 1.5,
+                        position: 'relative'
+                      },
+                      '& ul li::before': {
+                        content: '"•"',
+                        color: '#FDB813',
+                        fontWeight: 'bold',
+                        position: 'absolute',
+                        left: '-1.5rem'
+                      },
+                      '& a': {
+                        color: '#FDB813',
+                        textDecoration: 'none',
+                        fontWeight: 500,
+                        borderBottom: '1px solid transparent',
+                        transition: 'all 0.3s ease',
+                        '&:hover': {
+                          borderBottomColor: '#FDB813',
+                          color: '#E6A612'
+                        }
+                      },
+                      '& img': {
+                        maxWidth: '100%',
+                        height: 'auto',
+                        borderRadius: 2,
+                        my: 3,
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                        transition: 'transform 0.3s ease',
+                        '&:hover': {
+                          transform: 'scale(1.02)'
+                        }
+                      },
+                      '& blockquote': {
+                        borderLeft: '4px solid #FDB813',
+                        pl: 3,
+                        ml: 0,
+                        fontStyle: 'italic',
+                        color: '#6b7280',
+                        bgcolor: '#f9fafb',
+                        p: 3,
+                        borderRadius: 2,
+                        my: 3,
+                        position: 'relative',
+                        '&::before': {
+                          content: '""',
+                          position: 'absolute',
+                          top: 0,
+                          left: 0,
+                          right: 0,
+                          bottom: 0,
+                          background: 'linear-gradient(135deg, rgba(250, 204, 21, 0.05) 0%, rgba(245, 158, 11, 0.05) 100%)',
+                          borderRadius: 2,
+                          zIndex: -1
+                        }
+                      },
+                      '& strong, & b': {
+                        fontWeight: 700,
+                        color: '#1f2937'
+                      },
+                      '& em, & i': {
+                        fontStyle: 'italic',
+                        color: '#6b7280'
+                      },
+                      '& table': {
+                        width: '100%',
+                        borderCollapse: 'collapse',
+                        my: 3,
+                        borderRadius: 2,
+                        overflow: 'hidden',
+                        boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+                      },
+                      '& th, & td': {
+                        border: '1px solid #e5e7eb',
+                        padding: '12px',
+                        textAlign: 'left'
+                      },
+                      '& th': {
+                        bgcolor: '#FDB813',
+                        color: '#1f2937',
+                        fontWeight: 600
+                      },
+                      '& tr:nth-of-type(even)': {
+                        bgcolor: '#f9fafb'
+                      }
+                    }}
+                  />
+                </Box>
+              </div>
+            )}
+          </div>
+        </main>
+      </div>
     </>
   );
 };
