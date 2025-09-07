@@ -8,7 +8,8 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-const storage = new CloudinaryStorage({
+// Create storage for bikes
+const bikeStorage = new CloudinaryStorage({
   cloudinary,
   params: {
     folder: 'bike_rent_bikes',
@@ -16,6 +17,46 @@ const storage = new CloudinaryStorage({
   },
 });
 
-const upload = multer({ storage });
+// Create storage for taxi cities
+const taxiStorage = new CloudinaryStorage({
+  cloudinary,
+  params: {
+    folder: 'bike_rent_taxi_cities',
+    allowed_formats: ['jpg', 'jpeg', 'png'],
+  },
+});
 
-module.exports = upload; 
+// Create storage for blogs
+const blogStorage = new CloudinaryStorage({
+  cloudinary,
+  params: {
+    folder: 'bike_rent_blogs',
+    allowed_formats: ['jpg', 'jpeg', 'png'],
+  },
+});
+
+// Create storage for city pages
+const cityStorage = new CloudinaryStorage({
+  cloudinary,
+  params: {
+    folder: 'bike_rent_city_pages',
+    allowed_formats: ['jpg', 'jpeg', 'png'],
+  },
+});
+
+// Export different upload middlewares for different content types
+const bikeUpload = multer({ storage: bikeStorage });
+const taxiUpload = multer({ storage: taxiStorage });
+const blogUpload = multer({ storage: blogStorage });
+const cityUpload = multer({ storage: cityStorage });
+
+// Default export for backward compatibility (bikes)
+const upload = bikeUpload;
+
+module.exports = {
+  upload, // Default for bikes
+  bikeUpload,
+  taxiUpload,
+  blogUpload,
+  cityUpload
+}; 

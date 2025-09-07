@@ -1,6 +1,6 @@
 const express = require('express');
 const { auth, admin } = require('../middleware/auth');
-const upload = require('../utils/cloudinary');
+const { cityUpload } = require('../utils/cloudinary');
 const router = express.Router();
 const User = require('../models/User');
 const CityPage = require('../models/CityPage');
@@ -458,7 +458,7 @@ router.get('/city-routes', async (req, res) => {
 });
 
 // Create new city page
-router.post('/city-pages', auth, admin, upload.single('image'), async (req, res) => {
+router.post('/city-pages', auth, admin, cityUpload.single('image'), async (req, res) => {
   try {
     const { name, description, content, seoTitle, seoDescription, metaKeywords } = req.body;
     
@@ -526,7 +526,7 @@ router.post('/city-pages', auth, admin, upload.single('image'), async (req, res)
 });
 
 // Update city page
-router.put('/city-pages/:id', auth, admin, upload.single('image'), async (req, res) => {
+router.put('/city-pages/:id', auth, admin, cityUpload.single('image'), async (req, res) => {
   try {
     const { id } = req.params;
     const { name, description, content, isActive, seoTitle, seoDescription, metaKeywords } = req.body;
@@ -615,7 +615,7 @@ router.delete('/city-pages/:id', auth, admin, async (req, res) => {
 });
 
 // Image upload endpoint for rich text editor
-router.post('/upload/image', auth, admin, upload.single('image'), async (req, res) => {
+router.post('/upload/image', auth, admin, cityUpload.single('image'), async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ message: 'No image file provided' });

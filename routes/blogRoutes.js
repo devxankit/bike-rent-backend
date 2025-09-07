@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { auth, admin } = require('../middleware/auth');
-const upload = require('../utils/cloudinary');
+const { blogUpload } = require('../utils/cloudinary');
 const Blog = require('../models/Blog');
 
 // Public routes - Get all published blogs
@@ -142,7 +142,7 @@ router.get('/admin/all', auth, admin, async (req, res) => {
 });
 
 // Admin route - Create new blog
-router.post('/admin', auth, admin, upload.single('thumbnail'), async (req, res) => {
+router.post('/admin', auth, admin, blogUpload.single('thumbnail'), async (req, res) => {
   try {
     // Debug logging for file and body
     console.log('DEBUG /api/blogs/admin req.file:', req.file);
@@ -196,7 +196,7 @@ router.post('/admin', auth, admin, upload.single('thumbnail'), async (req, res) 
 });
 
 // Admin route - Update blog
-router.put('/admin/:id', auth, admin, upload.single('thumbnail'), async (req, res) => {
+router.put('/admin/:id', auth, admin, blogUpload.single('thumbnail'), async (req, res) => {
   try {
     const {
       title,
