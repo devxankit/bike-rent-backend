@@ -8,7 +8,7 @@ const {
   getTaxiCityRoutes 
 } = require('../controllers/taxiCityController');
 const { auth, admin } = require('../middleware/auth');
-const { taxiUpload } = require('../utils/cloudinary');
+const { taxiCityUpload } = require('../utils/cloudinary');
 
 // Get all taxi cities (admin)
 router.get('/', auth, admin, getAllTaxiCities);
@@ -17,10 +17,10 @@ router.get('/', auth, admin, getAllTaxiCities);
 router.get('/routes', auth, admin, getTaxiCityRoutes);
 
 // Create new taxi city
-router.post('/', auth, admin, taxiUpload.single('image'), createTaxiCity);
+router.post('/', auth, admin, taxiCityUpload.single('image'), createTaxiCity);
 
 // Update taxi city
-router.put('/:id', auth, admin, taxiUpload.single('image'), updateTaxiCity);
+router.put('/:id', auth, admin, taxiCityUpload.single('image'), updateTaxiCity);
 
 // Delete taxi city
 router.delete('/:id', auth, admin, deleteTaxiCity);

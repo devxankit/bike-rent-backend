@@ -31,6 +31,7 @@ const authRoutes = require('./routes/authRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const cityRoutes = require('./routes/cityRoutes');
 const blogRoutes = require('./routes/blogRoutes');
+const taxiRoutes = require('./routes/taxiRoutes');
 const taxiCityRoutes = require('./routes/taxiCityRoutes');
 const adminTaxiCityRoutes = require('./routes/adminTaxiCityRoutes');
 const connectDB = require('./db');
@@ -41,6 +42,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/cities', cityRoutes);
 app.use('/api/blogs', blogRoutes);
+app.use('/api/taxis', taxiRoutes);
 app.use('/api/taxi-cities', taxiCityRoutes);
 app.use('/api/admin/taxi-cities', adminTaxiCityRoutes);
 
