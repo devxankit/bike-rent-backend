@@ -53,20 +53,10 @@ const taxiStorage = new CloudinaryStorage({
   },
 });
 
-// Create storage for tour cities
-const tourCityStorage = new CloudinaryStorage({
-  cloudinary,
-  params: {
-    folder: 'bike_rent_tour_cities',
-    allowed_formats: ['jpg', 'jpeg', 'png'],
-  },
-});
-
 // Export different upload middlewares for different content types
 const bikeUpload = multer({ storage: bikeStorage });
 const taxiUpload = multer({ storage: taxiStorage });
 const taxiCityUpload = multer({ storage: taxiCityStorage });
-const tourCityUpload = multer({ storage: tourCityStorage });
 const blogUpload = multer({ storage: blogStorage });
 const cityUpload = multer({ storage: cityStorage });
 
@@ -78,7 +68,6 @@ module.exports = {
   bikeUpload,
   taxiUpload,
   taxiCityUpload,
-  tourCityUpload,
   blogUpload,
   cityUpload
 }; 
