@@ -34,6 +34,7 @@ const blogRoutes = require('./routes/blogRoutes');
 const taxiRoutes = require('./routes/taxiRoutes');
 const taxiCityRoutes = require('./routes/taxiCityRoutes');
 const adminTaxiCityRoutes = require('./routes/adminTaxiCityRoutes');
+const tourRoutes = require('./routes/tourRoutes');
 const connectDB = require('./db');
 
 // Use routes
@@ -45,6 +46,7 @@ app.use('/api/blogs', blogRoutes);
 app.use('/api/taxis', taxiRoutes);
 app.use('/api/taxi-cities', taxiCityRoutes);
 app.use('/api/admin/taxi-cities', adminTaxiCityRoutes);
+app.use('/api/tours', tourRoutes);
 
 // Health check route
 app.get('/api/health', (req, res) => {
@@ -63,12 +65,103 @@ app.get('/api', (req, res) => {
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error('[Server] Error:', err);
-  res.status(500).json({ message: 'Internal server error' });
+  
+  // Handle specific error types
+  if (err.name === 'ValidationError') {
+    return res.status(400).json({ 
+      message: 'Validation failed', 
+      errors: Object.values(err.errors).map(e => e.message) 
+    });
+  }
+  
+  if (err.name === 'CastError') {
+    return res.status(400).json({ 
+      message: 'Invalid ID format' 
+    });
+  }
+  
+  if (err.code === 11000) {
+    return res.status(400).json({ 
+      message: 'Duplicate entry found' 
+    });
+  }
+  
+  if (err.name === 'MulterError') {
+    if (err.code === 'LIMIT_FILE_SIZE') {
+      return res.status(400).json({ 
+        message: 'File too large' 
+      });
+    }
+    if (err.code === 'LIMIT_FILE_COUNT') {
+      return res.status(400).json({ 
+        message: 'Too many files' 
+      });
+    }
+    if (err.code === 'LIMIT_UNEXPECTED_FILE') {
+      return res.status(400).json({ 
+        message: 'Unexpected file field' 
+      });
+    }
+  }
+  
+  // Handle Cloudinary timeout errors
+  if (err.name === 'TimeoutError' || err.message?.includes('Request Timeout')) {
+    return res.status(408).json({
+      message: 'Image upload timeout. Please try again with smaller images.'
+    });
+  }
+  
+  // Handle Cloudinary invalid file errors
+  if (err.message?.includes('Invalid image file') || err.message?.includes('Invalid file type')) {
+    return res.status(400).json({
+      message: 'Invalid image file. Please upload valid image files (JPEG, PNG, WebP, GIF, BMP, TIFF, SVG).'
+    });
+  }
+  
+  // Generic error response
+  res.status(500).json({ 
+    message: 'Internal server error',
+    ...(process.env.NODE_ENV === 'development' && { error: err.message })
+  });
 });
 
 // 404 handler
 app.use('*', (req, res) => {
   res.status(404).json({ message: 'Route not found' });
+});
+
+// Handle uncaught exceptions
+process.on('uncaughtException', (err) => {
+  console.error('[Server] Uncaught Exception:', err);
+  console.log('[Server] Shutting down gracefully...');
+  process.exit(1);
+});
+
+// Handle unhandled promise rejections
+process.on('unhandledRejection', (err) => {
+  console.error('[Server] Unhandled Rejection:', err);
+  
+  // Don't exit on Cloudinary errors or network issues
+  if (err.name === 'TimeoutError' || 
+      err.message?.includes('Request Timeout') ||
+      err.message?.includes('Invalid image file') ||
+      err.message?.includes('Invalid file type') ||
+      err.message?.includes('ECONNRESET') ||
+      err.message?.includes('ENOTFOUND') ||
+      err.code === 'ECONNRESET' ||
+      err.code === 'ENOTFOUND') {
+    console.log('[Server] Network/Cloudinary error - continuing server operation...');
+    return;
+  }
+  
+  // For other errors, log and continue (don't exit)
+  console.error('[Server] Unhandled rejection - continuing server operation...');
+});
+
+// Handle SIGTERM
+process.on('SIGTERM', () => {
+  console.log('[Server] SIGTERM received. Shutting down gracefully...');
+  process.exit(0);
 });
 
 connectDB();

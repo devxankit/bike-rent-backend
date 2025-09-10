@@ -53,12 +53,48 @@ const taxiStorage = new CloudinaryStorage({
   },
 });
 
+// Create storage for tours
+const tourStorage = new CloudinaryStorage({
+  cloudinary,
+  params: {
+    folder: 'bike_rent_tours',
+    allowed_formats: ['jpg', 'jpeg', 'png', 'webp', 'gif', 'bmp', 'tiff', 'svg'],
+    transformation: [{ width: 800, height: 600, crop: 'limit', quality: 'auto' }],
+    resource_type: 'auto',
+  },
+  timeout: 60000, // 1 minute timeout
+  limits: {
+    fileSize: 5 * 1024 * 1024, // 5MB limit per file
+  },
+});
+
 // Export different upload middlewares for different content types
 const bikeUpload = multer({ storage: bikeStorage });
 const taxiUpload = multer({ storage: taxiStorage });
 const taxiCityUpload = multer({ storage: taxiCityStorage });
 const blogUpload = multer({ storage: blogStorage });
 const cityUpload = multer({ storage: cityStorage });
+const tourUpload = multer({ 
+  storage: tourStorage,
+  limits: {
+    fileSize: 5 * 1024 * 1024, // 5MB per file
+    files: 5, // Maximum 5 files
+  },
+  fileFilter: (req, file, cb) => {
+    // Check file type - be more permissive
+    const allowedMimeTypes = [
+      'image/jpeg', 'image/jpg', 'image/png', 'image/webp', 
+      'image/gif', 'image/bmp', 'image/tiff', 'image/svg+xml'
+    ];
+    
+    if (file.mimetype.startsWith('image/') || allowedMimeTypes.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      console.log(`[TourUpload] Rejected file: ${file.originalname}, type: ${file.mimetype}`);
+      cb(new Error(`Invalid file type: ${file.mimetype}. Only image files are allowed.`), false);
+    }
+  }
+});
 
 // Default export for backward compatibility (bikes)
 const upload = bikeUpload;
@@ -69,5 +105,6 @@ module.exports = {
   taxiUpload,
   taxiCityUpload,
   blogUpload,
-  cityUpload
+  cityUpload,
+  tourUpload
 }; 

@@ -12,7 +12,8 @@ const blogSchema = new mongoose.Schema({
     required: true,
     unique: true,
     lowercase: true,
-    trim: true
+    trim: true,
+    index: true
   },
   content: {
     type: String,
@@ -80,7 +81,6 @@ const blogSchema = new mongoose.Schema({
 // Index for search functionality
 blogSchema.index({ title: 'text', content: 'text', tags: 'text' });
 blogSchema.index({ status: 1, publishedAt: -1 });
-blogSchema.index({ slug: 1 });
 
 // Generate slug before saving
 blogSchema.pre('save', async function(next) {
