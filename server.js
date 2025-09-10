@@ -34,6 +34,9 @@ const blogRoutes = require('./routes/blogRoutes');
 const taxiRoutes = require('./routes/taxiRoutes');
 const taxiCityRoutes = require('./routes/taxiCityRoutes');
 const adminTaxiCityRoutes = require('./routes/adminTaxiCityRoutes');
+const tourCityRoutes = require('./routes/tourCityRoutes');
+const adminTourCityRoutes = require('./routes/adminTourCityRoutes');
+const tourRoutes = require('./routes/tourRoutes');
 const connectDB = require('./db');
 
 // Use routes
@@ -45,6 +48,9 @@ app.use('/api/blogs', blogRoutes);
 app.use('/api/taxis', taxiRoutes);
 app.use('/api/taxi-cities', taxiCityRoutes);
 app.use('/api/admin/taxi-cities', adminTaxiCityRoutes);
+app.use('/api/tour-cities', tourCityRoutes);
+app.use('/api/admin/tour-cities', adminTourCityRoutes);
+app.use('/api/tours', tourRoutes);
 
 // Health check route
 app.get('/api/health', (req, res) => {
