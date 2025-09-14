@@ -34,6 +34,8 @@ const tourSchema = new mongoose.Schema({
   payAtPickup: { type: Boolean, default: false },
   category: { type: String, required: true }, // Adventure, Cultural, Beach, Wildlife, etc.
   tags: [{ type: String }], // For search and filtering
+  termsAndConditions: [{ type: String }], // Dynamic terms and conditions
+  guidelines: [{ type: String }], // Dynamic travel guidelines
 }, { timestamps: true });
 
 module.exports = mongoose.model('Tour', tourSchema);

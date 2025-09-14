@@ -102,7 +102,8 @@ exports.addTaxi = async (req, res) => {
       features, 
       ownerPhone, 
       tripsCount, 
-      payAtPickup 
+      payAtPickup,
+      additionalInformation 
     } = req.body;
     
     if (!name || !type || !image || !location || !seatingCapacity || !pricePerKm || !pricePerTrip || !rentalPricePerDay || !acType || !luggageCapacity || !fuelType || !ownerPhone) {
@@ -145,7 +146,8 @@ exports.updateTaxi = async (req, res) => {
       features, 
       ownerPhone, 
       tripsCount, 
-      payAtPickup 
+      payAtPickup,
+      additionalInformation 
     } = req.body;
     
     if (!name || !type || !image || !location || !seatingCapacity || !pricePerKm || !pricePerTrip || !rentalPricePerDay || !acType || !luggageCapacity || !fuelType || !ownerPhone) {

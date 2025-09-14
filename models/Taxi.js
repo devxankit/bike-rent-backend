@@ -16,6 +16,7 @@ const taxiSchema = new mongoose.Schema({
   ownerPhone: { type: String, required: true },
   tripsCount: { type: Number, default: 0 },
   payAtPickup: { type: Boolean, default: false },
+  additionalInformation: { type: String, default: '' }, // For pricing terms, exclusions, etc.
   isAvailable: { type: Boolean, default: true },
   isBooked: { type: Boolean, default: false },
   bookingPeriod: {

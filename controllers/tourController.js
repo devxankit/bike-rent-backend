@@ -215,6 +215,12 @@ exports.addTour = async (req, res) => {
     if (req.body.tags) {
       req.body.tags = req.body.tags.split(',').map(t => t.trim()).filter(t => t);
     }
+    if (req.body.termsAndConditions) {
+      req.body.termsAndConditions = req.body.termsAndConditions.split(',').map(t => t.trim()).filter(t => t);
+    }
+    if (req.body.guidelines) {
+      req.body.guidelines = req.body.guidelines.split(',').map(g => g.trim()).filter(g => g);
+    }
 
     // Parse itinerary if provided as JSON string
     if (req.body.itinerary && typeof req.body.itinerary === 'string') {
@@ -349,6 +355,12 @@ exports.updateTour = async (req, res) => {
     }
     if (req.body.tags) {
       req.body.tags = req.body.tags.split(',').map(t => t.trim()).filter(t => t);
+    }
+    if (req.body.termsAndConditions) {
+      req.body.termsAndConditions = req.body.termsAndConditions.split(',').map(t => t.trim()).filter(t => t);
+    }
+    if (req.body.guidelines) {
+      req.body.guidelines = req.body.guidelines.split(',').map(g => g.trim()).filter(g => g);
     }
 
     // Parse itinerary if provided as JSON string
