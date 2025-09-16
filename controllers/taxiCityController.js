@@ -34,7 +34,8 @@ function createTaxiCityPageComponent(cityName, slug) {
   const componentTemplate = `import React, { useEffect, useState } from 'react';
 import TaxiCard from '../../components/TaxiCard';
 import api from '../../utils/api';
-import Navbar from '../../components/Navbar';
+import TaxiNavBar from '../../components/taxi-components/TaxiNavBar';
+import FooterTaxi from '../../components/FooterTaxi';
 import { useNavigate } from 'react-router-dom';
 import TaxiFilterSidebar from '../../components/TaxiFilterSidebar';
 import { FiX } from 'react-icons/fi';
@@ -122,7 +123,7 @@ const ${cityName}TaxiPage = ({ cityData }) => {
 
   return (
     <>
-      <Navbar onFilterToggle={() => setFilterOpen(true)} />
+      <TaxiNavBar onFilterToggle={() => setFilterOpen(true)} />
       <div className="flex min-h-screen bg-gray-50">
         {/* Filters - Left Sidebar */}
         <aside className="w-80 p-4 bg-white border-r hidden md:block sticky top-0 h-screen shadow-lg rounded-r-3xl" style={{ alignSelf: 'flex-start' }}>
@@ -341,6 +342,7 @@ const ${cityName}TaxiPage = ({ cityData }) => {
           </div>
         </main>
       </div>
+      <FooterTaxi />
     </>
   );
 };
